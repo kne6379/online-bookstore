@@ -4,7 +4,8 @@ import { AppService } from './app.service';
 import { BooksModule } from './books/books.module';
 
 @Module({
-  imports: [BooksModule],
+  imports: [ConfigModule.forRoot({isGloabal: true})
+    BooksModule],
   controllers: [AppController],
   providers: [AppService],
 })
