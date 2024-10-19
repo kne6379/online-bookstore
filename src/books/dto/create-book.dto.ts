@@ -12,7 +12,7 @@ import {
   Min,
 } from 'class-validator';
 import { Category } from '../types/category.type';
-import { MESSAGES } from 'src/constants/message.constant';
+import { MESSAGES } from 'src/common/constants/message.constant';
 
 export class CreateBookDto {
   @IsNotEmpty({ message: MESSAGES.BOOK.TITLE.REQUIRED })
