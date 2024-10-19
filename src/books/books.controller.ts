@@ -11,21 +11,22 @@ import {
   Query,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
-import { CreateBookDto } from './dto/create-book.dto';
+import { AddNewBookDto } from './dto/add-new-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { ApiResponse } from './interfaces/api-response.interface';
 import { Book } from './entities/book.entity';
-import { MESSAGES } from 'src/constants/message.constant';
+import { MESSAGES } from 'src/common/constants/message.constant';
+import { GetAllBookDto } from './dto/get-all-book.dto';
 
 @Controller('api/books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Post('/')
-  async createBook(
-    @Body() createBookDto: CreateBookDto,
+  async addNewBook(
+    @Body() addNewBookDto: AddNewBookDto,
   ): Promise<ApiResponse<Book>> {
-    const data = await this.booksService.createBook(createBookDto);
+    const data = await this.booksService.addNewBook(addNewBookDto);
     return {
       statusCode: HttpStatus.OK,
       message: MESSAGES.BOOK.SUCCESS.CREATED,
@@ -34,8 +35,10 @@ export class BooksController {
   }
 
   @Get('/')
-  async findAll(): Promise<ApiResponse<Book[]>> {
-    const data = await this.booksService.findAllBooks();
+  async getAllBooks(
+    @Query() getAllBookDto: GetAllBookDto,
+  ): Promise<ApiResponse<Book[]>> {
+    const data = await this.booksService.getAllBooks(getAllBookDto);
     return {
       statusCode: HttpStatus.OK,
       message: MESSAGES.BOOK.SUCCESS.FOUND_ALL,
@@ -44,17 +47,25 @@ export class BooksController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.booksService.findOne(+id);
+  async getBookById(@Param('id') id: string): Promise<ApiResponse<Book>> {
+    const data = await this.booksService.getBookById(+id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: MESSAGES.BOOK.SUCCESS.FOUND_ONE,
+      data,
+    };
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
-    return this.booksService.update(+id, updateBookDto);
+  updateBookById(
+    @Param('id') id: string,
+    @Body() updateBookDto: UpdateBookDto,
+  ) {
+    return this.booksService.updateBookById(+id, updateBookDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.booksService.remove(+id);
+  deleteBookById(@Param('id') id: string) {
+    return this.booksService.deleteBookById(+id);
   }
 }

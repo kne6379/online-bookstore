@@ -46,10 +46,13 @@ export const MESSAGES = {
     },
     SUCCESS: {
       CREATED: '책이 성공적으로 등록되었습니다.',
-      FOUND_ALL: '전체 도서 목록을 성공적으로 조회했습니다.',
-      FOUND_ONE: '도서 상세 정보를 성공적으로 조회했습니다.',
-      UPDATED: '도서 정보가 성공적으로 업데이트되었습니다.',
-      DELETED: '도서가 성공적으로 삭제되었습니다.',
+      FOUND_ALL: '성공적으로 도서 목록을 조회했습니다.',
+      FOUND_ONE: '성공적으로 도서 상세 정보를 조회했습니다.',
+      UPDATED: '성공적으로 도서 정보가 업데이트되었습니다.',
+      DELETED: '성공적으로 도서가 삭제되었습니다.',
+    },
+    FAILED: {
+      NO_BOOK_FOUND: '조회할 도서가 없습니다.',
     },
     ERROR: {
       CREATED_FAILED: '도서를 등록하는 중 오류가 발생했습니다.',
@@ -57,6 +60,13 @@ export const MESSAGES = {
       FIND_ONE_FAILED: '도서 상세 정보를 불러오는 중 오류가 발생했습니다.',
       UPDATE_FAILED: '도서 정보를 업데이트하는 중 오류가 발생했습니다.',
       DELETE_FAILED: '도서를 삭제하는 중 오류가 발생했습니다.',
+    },
+  },
+  COMMON: {
+    ERROR: {
+      INTERNAL_SERVER_ERROR: '예상치 못한 오류가 발생하였습니다.',
+      INVALID_ID: '유효하지 않은 ID 값입니다.',
+      ID_NOT_FOUND: '해당 ID로 조회된 데이터가 없습니다.',
     },
   },
 };
