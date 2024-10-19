@@ -1,5 +1,4 @@
 import {
-  IsDate,
   IsDateString,
   IsEnum,
   IsInt,
@@ -14,7 +13,7 @@ import {
 import { Category } from '../types/category.type';
 import { MESSAGES } from 'src/common/constants/message.constant';
 
-export class CreateBookDto {
+export class AddNewBookDto {
   @IsNotEmpty({ message: MESSAGES.BOOK.TITLE.REQUIRED })
   @IsString({ message: MESSAGES.BOOK.TITLE.INVALID_FORMAT })
   @MaxLength(100, { message: MESSAGES.BOOK.TITLE.LENGTH_EXCEEDED })

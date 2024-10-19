@@ -11,12 +11,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
-import { CreateBookDto } from './dto/create-book.dto';
+import { AddNewBookDto } from './dto/add-new-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { ApiResponse } from './interfaces/api-response.interface';
 import { Book } from './entities/book.entity';
 import { MESSAGES } from 'src/common/constants/message.constant';
-import { FindBookDto } from './dto/find-book.dto';
+import { GetAllBookDto } from './dto/get-all-book.dto';
 
 @Controller('api/books')
 export class BooksController {
@@ -24,9 +24,9 @@ export class BooksController {
 
   @Post('/')
   async addNewBook(
-    @Body() createBookDto: CreateBookDto,
+    @Body() addNewBookDto: AddNewBookDto,
   ): Promise<ApiResponse<Book>> {
-    const data = await this.booksService.addNewBook(createBookDto);
+    const data = await this.booksService.addNewBook(addNewBookDto);
     return {
       statusCode: HttpStatus.OK,
       message: MESSAGES.BOOK.SUCCESS.CREATED,
@@ -36,9 +36,9 @@ export class BooksController {
 
   @Get('/')
   async getAllBooks(
-    @Query() findBookDto: FindBookDto,
+    @Query() getAllBookDto: GetAllBookDto,
   ): Promise<ApiResponse<Book[]>> {
-    const data = await this.booksService.getAllBooks(findBookDto);
+    const data = await this.booksService.getAllBooks(getAllBookDto);
     return {
       statusCode: HttpStatus.OK,
       message: MESSAGES.BOOK.SUCCESS.FOUND_ALL,

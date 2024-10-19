@@ -4,13 +4,13 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateBookDto } from './dto/create-book.dto';
+import { AddNewBookDto } from './dto/add-new-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Book } from './entities/book.entity';
 import { Repository } from 'typeorm';
 import { MESSAGES } from 'src/common/constants/message.constant';
-import { FindBookDto } from './dto/find-book.dto';
+import { GetAllBookDto } from './dto/get-all-book.dto';
 
 @Injectable()
 export class BooksService {
@@ -18,9 +18,9 @@ export class BooksService {
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
   ) {}
-  async addNewBook(createBookDto: CreateBookDto): Promise<Book> {
+  async addNewBook(addNewBookDto: AddNewBookDto): Promise<Book> {
     try {
-      const data = await this.bookRepository.save(createBookDto);
+      const data = await this.bookRepository.save(addNewBookDto);
       if (!data) {
         throw new NotFoundException(MESSAGES.BOOK.ERROR.CREATED_FAILED);
       }
@@ -32,9 +32,9 @@ export class BooksService {
     }
   }
 
-  async getAllBooks(findBookDto: FindBookDto): Promise<Book[]> {
+  async getAllBooks(getAllBookDto: GetAllBookDto): Promise<Book[]> {
     const data = await this.bookRepository.find({
-      where: findBookDto,
+      where: getAllBookDto,
     });
 
     if (!data || data.length === 0) {
