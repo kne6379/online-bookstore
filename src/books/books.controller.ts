@@ -16,7 +16,6 @@ import { ApiResponse } from './interfaces/api-response.interface';
 import { Book } from './entities/book.entity';
 import { MESSAGES } from 'src/common/constants/message.constant';
 import { GetAllBookDto } from './dto/get-all-book.dto';
-import { DeleteResult } from 'typeorm';
 
 @Controller('api/books')
 export class BooksController {
