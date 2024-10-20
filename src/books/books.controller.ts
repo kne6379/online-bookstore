@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   HttpStatus,
@@ -17,6 +16,7 @@ import { ApiResponse } from './interfaces/api-response.interface';
 import { Book } from './entities/book.entity';
 import { MESSAGES } from 'src/common/constants/message.constant';
 import { GetAllBookDto } from './dto/get-all-book.dto';
+import { DeleteResult } from 'typeorm';
 
 @Controller('api/books')
 export class BooksController {
@@ -57,15 +57,28 @@ export class BooksController {
   }
 
   @Put(':id')
-  updateBookById(
+  async updateBookById(
     @Param('id') id: string,
     @Body() updateBookDto: UpdateBookDto,
-  ) {
-    return this.booksService.updateBookById(+id, updateBookDto);
+  ): Promise<ApiResponse<{ updateFields: string[] }>> {
+    const data = await this.booksService.updateBookById(+id, updateBookDto);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: MESSAGES.BOOK.SUCCESS.UPDATED,
+      data,
+    };
   }
 
   @Delete(':id')
-  deleteBookById(@Param('id') id: string) {
-    return this.booksService.deleteBookById(+id);
+  async deleteBookById(
+    @Param('id') id: string,
+  ): Promise<ApiResponse<{ deletedBookId: number }>> {
+    const data = await this.booksService.deleteBookById(+id);
+    return {
+      statusCode: HttpStatus.OK,
+      message: MESSAGES.BOOK.SUCCESS.DELETED,
+      data,
+    };
   }
 }

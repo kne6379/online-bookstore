@@ -45,7 +45,7 @@ export const MESSAGES = {
       INVALID_FORMAT: '발행일자가 올바르지 않습니다.',
     },
     SUCCESS: {
-      CREATED: '책이 성공적으로 등록되었습니다.',
+      CREATED: '성공적으로 도서가 등록되었습니다.',
       FOUND_ALL: '성공적으로 도서 목록을 조회했습니다.',
       FOUND_ONE: '성공적으로 도서 상세 정보를 조회했습니다.',
       UPDATED: '성공적으로 도서 정보가 업데이트되었습니다.',
@@ -53,6 +53,7 @@ export const MESSAGES = {
     },
     FAILED: {
       NO_BOOK_FOUND: '조회할 도서가 없습니다.',
+      BOOK_NOT_FOUND: '해당 도서를 찾을 수 없습니다.',
     },
     ERROR: {
       CREATED_FAILED: '도서를 등록하는 중 오류가 발생했습니다.',
