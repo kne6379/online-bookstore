@@ -71,8 +71,6 @@
 
 ## API 명세서
 
-- **배포 URL**: `http://stephenoeul.shop:3001/`
-
 ### 1. 도서 등록 API
 
 - **URL**: `/api/books`
