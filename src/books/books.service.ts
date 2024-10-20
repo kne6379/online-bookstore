@@ -19,17 +19,11 @@ export class BooksService {
     private readonly bookRepository: Repository<Book>,
   ) {}
   async addNewBook(addNewBookDto: AddNewBookDto): Promise<Book> {
-    try {
-      const data = await this.bookRepository.save(addNewBookDto);
-      if (!data) {
-        throw new NotFoundException(MESSAGES.BOOK.ERROR.CREATED_FAILED);
-      }
-      return data;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        MESSAGES.COMMON.ERROR.INTERNAL_SERVER_ERROR,
-      );
+    const data = await this.bookRepository.save(addNewBookDto);
+    if (!data) {
+      throw new NotFoundException(MESSAGES.BOOK.ERROR.CREATED_FAILED);
     }
+    return data;
   }
 
   async getAllBooks(getAllBookDto: GetAllBookDto): Promise<Book[]> {
@@ -45,22 +39,27 @@ export class BooksService {
   }
 
   async getBookById(id: number): Promise<Book> {
-    await this.validateId(id);
+    return await this.getExistingBook(id);
+  }
 
-    const data = await this.bookRepository.findOne({ where: { id } });
+  async updateBookById(
+    id: number,
+    updateBookDto: UpdateBookDto,
+  ): Promise<{ updateFields: string[] }> {
+    await this.getExistingBook(id);
+    await this.bookRepository.update({ id }, updateBookDto);
 
-    if (!data) {
-      throw new NotFoundException(MESSAGES.BOOK.FAILED.NO_BOOK_FOUND);
+    return { updateFields: Object.keys(updateBookDto) };
+  }
+
+  async deleteBookById(id: number): Promise<{ deletedBookId: number }> {
+    await this.getExistingBook(id);
+    const result = await this.bookRepository.delete({ id });
+
+    if (result.affected === 0) {
+      throw new BadRequestException(MESSAGES.BOOK.ERROR.DELETE_FAILED);
     }
-    return data;
-  }
-
-  updateBookById(id: number, updateBookDto: UpdateBookDto) {
-    return `This action updates a #${id} book`;
-  }
-
-  deleteBookById(id: number) {
-    return `This action removes a #${id} book`;
+    return { deletedBookId: +id };
   }
 
   // id가 NaN값인지 검사
@@ -68,5 +67,17 @@ export class BooksService {
     if (isNaN(id)) {
       throw new BadRequestException(MESSAGES.COMMON.ERROR.INVALID_ID);
     }
+  }
+
+  // 도서가 존재하는지 검사
+  async getExistingBook(id: number): Promise<Book> {
+    await this.validateId(id);
+
+    const data = await this.bookRepository.findOne({ where: { id } });
+
+    if (!data) {
+      throw new NotFoundException(MESSAGES.BOOK.FAILED.BOOK_NOT_FOUND);
+    }
+    return data;
   }
 }
