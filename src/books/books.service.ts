@@ -38,7 +38,10 @@ export class BooksService {
   async getAllBooks(getAllBookDto: GetAllBookDto): Promise<Book[]> {
     // DTO에서 받은 title과 author 값을 추출하여 캐시 키를 생성
     const { title, author } = getAllBookDto;
-    const cacheKey = `books:${title || ''}:${author || ''}`;
+    const cacheKey =
+      Object.keys(getAllBookDto).length === 0
+        ? `books:all`
+        : `books:${title || ''}:${author || ''}`;
 
     // 캐시에 데이터가 있는지 확인
     let data = await this.cacheManager.get<Book[]>(cacheKey);
@@ -52,16 +55,15 @@ export class BooksService {
     }
 
     // 조회된 데이터가 없거나 비어있으면 예외 처리
-    if (!data || data.length === 0) {
-      throw new NotFoundException(MESSAGES.BOOK.FAILED.NO_BOOK_FOUND);
-    }
+    this.validateDataNotEmpty(data);
+
     return data;
   }
 
   // 도서 상세 조회
   async getBookById(id: number): Promise<Book> {
     // ID 값이 유효한지 검사 (숫자인지 여부 확인)
-    await this.validateId(id);
+    this.validateId(id);
 
     // 캐시 키 생성
     const cacheKey = `book:${id}`;
@@ -83,13 +85,15 @@ export class BooksService {
     updateBookDto: UpdateBookDto,
   ): Promise<{ updateFields: string[] }> {
     // ID 값이 유효한지 검사 (숫자인지 여부 확인)
-    await this.validateId(id);
+    this.validateId(id);
 
     // 도서가 존재하는지 확인, 존재하지 않으면 예외 발생
     await this.findBookOrFail(id);
 
     // 도서 정보 업데이트
     await this.bookRepository.update({ id }, updateBookDto);
+
+    await this.clearAllCache();
 
     // 업데이트된 필드 목록 반환
     return { updateFields: Object.keys(updateBookDto) };
@@ -98,7 +102,7 @@ export class BooksService {
   // 도서 삭제
   async deleteBookById(id: number): Promise<{ deletedBookId: number }> {
     // ID 값이 유효한지 검사 (숫자인지 여부 확인)
-    await this.validateId(id);
+    this.validateId(id);
 
     // 도서가 존재하는지 확인, 존재하지 않으면 예외 발생
     await this.findBookOrFail(id);
@@ -111,15 +115,10 @@ export class BooksService {
       throw new BadRequestException(MESSAGES.BOOK.ERROR.DELETE_FAILED);
     }
 
+    await this.clearAllCache();
+
     // 삭제된 도서의 ID 반환
     return { deletedBookId: +id };
-  }
-
-  // id가 유효한 숫자인지 검사 (NaN 여부 확인)
-  async validateId(id: number): Promise<void> {
-    if (isNaN(id)) {
-      throw new BadRequestException(MESSAGES.COMMON.ERROR.INVALID_ID);
-    }
   }
 
   // 주어진 ID에 해당하는 도서를 조회, 없을 시 예외 발생
@@ -129,5 +128,32 @@ export class BooksService {
       throw new NotFoundException(MESSAGES.BOOK.FAILED.BOOK_NOT_FOUND);
     }
     return data;
+  }
+
+  // 전체 도서 캐시를 초기화하는 메서드
+  async clearAllCache(): Promise<void> {
+    const cacheKey = `books:all`;
+    const data = await this.bookRepository.find();
+
+    this.validateDataNotEmpty(data);
+
+    // 캐시 초기화 (기존 캐시 데이터 모두 삭제)
+    await this.cacheManager.reset();
+    // 새로운 전체 도서 목록을 캐시에 저장
+    await this.cacheManager.set(cacheKey, data);
+  }
+
+  // id가 유효한 숫자인지 검사 (NaN 여부 확인)
+  validateId(id: number): void {
+    if (isNaN(id)) {
+      throw new BadRequestException(MESSAGES.COMMON.ERROR.INVALID_ID);
+    }
+  }
+
+  // 조회된 데이터가 없거나 비어있으면 예외 처리
+  validateDataNotEmpty(data: Book[]): void {
+    if (!data || data.length === 0) {
+      throw new NotFoundException(MESSAGES.BOOK.FAILED.NO_BOOK_FOUND);
+    }
   }
 }
