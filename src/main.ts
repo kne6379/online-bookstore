@@ -9,6 +9,11 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const SERVER_PORT = configService.get<number>('SERVER_PORT');
 
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type, Authorization',
+  });
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new HttpErrorFilter());
 
