@@ -89,10 +89,9 @@ export class BooksService {
 
     // 도서가 존재하는지 확인, 존재하지 않으면 예외 발생
     await this.findBookOrFail(id);
-
     // 도서 정보 업데이트
     await this.bookRepository.update({ id }, updateBookDto);
-
+    // 전체 도서 캐시를 갱신하여 최신 상태로 유지
     await this.clearAllCache();
 
     // 업데이트된 필드 목록 반환
@@ -106,15 +105,13 @@ export class BooksService {
 
     // 도서가 존재하는지 확인, 존재하지 않으면 예외 발생
     await this.findBookOrFail(id);
-
     // 도서 삭제
     const result = await this.bookRepository.delete({ id });
-
     // 삭제된 항목이 없을 경우 예외 처리
     if (result.affected === 0) {
       throw new BadRequestException(MESSAGES.BOOK.ERROR.DELETE_FAILED);
     }
-
+    // 전체 도서 캐시를 갱신하여 최신 상태로 유지
     await this.clearAllCache();
 
     // 삭제된 도서의 ID 반환
@@ -134,9 +131,8 @@ export class BooksService {
   async clearAllCache(): Promise<void> {
     const cacheKey = `books:all`;
     const data = await this.bookRepository.find();
-
+    // 조회된 데이터가 없거나 비어있으면 예외 처리
     this.validateDataNotEmpty(data);
-
     // 캐시 초기화 (기존 캐시 데이터 모두 삭제)
     await this.cacheManager.reset();
     // 새로운 전체 도서 목록을 캐시에 저장
